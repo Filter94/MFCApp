@@ -82,38 +82,32 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 		for (int j = 0; j < DOC_X; j++){
 			int element_type = pDoc -> getElement(i, j);
 			switch (element_type){
-				case 1:
-				case 3:
-				case 4:
-				case 6 : 
+				case FIRST_TYPE: 
 					rCellRect.right = rCellRect.left + CELL_SIZE;
 					rCellRect.bottom = rCellRect.top + 2 * CELL_SIZE;
 					break;
-				case 2: {
+				case SECOND_TYPE: {
 							rCellRect.right = rCellRect.left + 2 * CELL_SIZE;
 							rCellRect.bottom = rCellRect.top + 2 * CELL_SIZE;
 							break;
 				}
-				case 5: {
+				case THIRD_TYPE: {
 							rCellRect.right = rCellRect.left + 2 * CELL_SIZE;
 							rCellRect.bottom = rCellRect.top + CELL_SIZE;
 							break;
 				}
-				case 7:
-				case 8:
-				case 9:
-				case 10: {
+				case FOURTH_TYPE: {
 							rCellRect.right = rCellRect.left + CELL_SIZE;
 							rCellRect.bottom = rCellRect.top + CELL_SIZE;
 							break;
 				}
-			}
-			if (element_type > 0){
+			}	//	Any type of object is > than EMPTY of PART_OF_OBJECT
+			if (element_type > PART_OF_OBJECT){
 				pDC->SelectObject(pCellPen);
 				pDC->SelectObject(bCellBrush);
 				pDC->Rectangle(rCellRect);
 			}
-			if ((g >= 0 && k >= 0) && ((i == g) && (j == k))){
+			if ((g >= PART_OF_OBJECT && k >= PART_OF_OBJECT) && ((i == g) && (j == k))){
 				rSelectedRect.top = rCellRect.top;
 				rSelectedRect.bottom = rCellRect.bottom;
 				rSelectedRect.right = rCellRect.right;
@@ -123,7 +117,7 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 		}
 		rCellRect.top += CELL_SIZE;
 	}
-	if ((g >= 0 && k >= 0)){
+	if ((g >= PART_OF_OBJECT && k >= PART_OF_OBJECT)){
 		pDC->SelectObject(pSelectPen);
 		pDC->SelectObject(bCellBrush);
 		pDC->Rectangle(rSelectedRect);
@@ -134,7 +128,7 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 	textRect.left = rect.right / 2 - 300;
 	textRect.bottom = rect.bottom - 10;
 	textRect.right = rect.right / 2 + 300;
-	pDC->SelectObject(scoreFont);
+	pDC -> SelectObject(scoreFont);
 	s.LoadString(IDS_SCORE);
 	CString cszTemp;
 	cszTemp.Format(_T("%s %d"), s, pDoc->getTurns());
@@ -145,9 +139,7 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 		textRect.bottom = textRect.top + 100;
 		textRect.right = rect.right / 2 + 300;
 		s.LoadString(IDS_WON_MESSAGE);
-		CFont m_Font;
-		m_Font.CreatePointFont(700, _T("Times New Roman"));
-		pDC -> SelectObject(m_Font);
+		pDC -> SelectObject(scoreFont);
 		pDC -> DrawText(s, textRect, DT_CENTER);
 	}
 }

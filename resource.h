@@ -8,6 +8,13 @@
 #define DOC_X                           4
 #define DOC_Y                           5
 #define CELL_WIDTH                      5
+#define FIRST_TYPE                      1
+#define SECOND_TYPE                     2
+#define THIRD_TYPE                      3
+#define FOURTH_TYPE                     4
+#define PART_OF_OBJECT                  0
+#define EMPTY                           -1
+#define NONE_SELECTED                   -1
 #define FRAME_WIDTH                     10
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100

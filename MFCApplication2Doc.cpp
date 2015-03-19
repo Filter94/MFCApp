@@ -33,7 +33,7 @@ END_MESSAGE_MAP()
 
 CMFCApplication2Doc::CMFCApplication2Doc()
 {
-	// TODO: добавьте код для одноразового вызова конструктора	 { { 1, 2, 2, 3 }, { 1, 2, 2, 3 }, { 4, 5, 5, 6 }, { 4, 7, 8, 6 }, { 9, 0, 0, 10 } }
+	// TODO: добавьте код для одноразового вызова конструктора	 { { 1, 2, 2, 1 }, { 1, 2, 2, 1 }, { 1, 3, 3, 1 }, { 1, 4, 4, 1 }, { 4, 0, 0, 4 } }
 	
 	//CMainFrame *pMainWnd = (CMainFrame *)AfxGetMainWnd();
 }
@@ -44,28 +44,28 @@ CMFCApplication2Doc::~CMFCApplication2Doc()
 
 BOOL CMFCApplication2Doc::OnNewDocument()
 {
-	gameArr[0][0] = 1;
-	gameArr[0][1] = 2;
-	gameArr[0][2] = 0;
-	gameArr[0][3] = 3;
-	gameArr[1][0] = 0;
-	gameArr[1][1] = 0;
-	gameArr[1][2] = 0;
-	gameArr[1][3] = 0;
-	gameArr[2][0] = 4;
-	gameArr[2][1] = 5;
-	gameArr[2][2] = 0;
-	gameArr[2][3] = 6;
-	gameArr[3][0] = 0;
-	gameArr[3][1] = 7;
-	gameArr[3][2] = 8;
-	gameArr[3][3] = 0;
-	gameArr[4][0] = 9;
-	gameArr[4][1] = -1;
-	gameArr[4][2] = -1;
-	gameArr[4][3] = 10;
-	selected.y = -1;
-	selected.x = -1;
+	gameArr[0][0] = FIRST_TYPE;
+	gameArr[0][1] = SECOND_TYPE;
+	gameArr[0][2] = PART_OF_OBJECT;
+	gameArr[0][3] = FIRST_TYPE;
+	gameArr[1][0] = PART_OF_OBJECT;
+	gameArr[1][1] = PART_OF_OBJECT;
+	gameArr[1][2] = PART_OF_OBJECT;
+	gameArr[1][3] = PART_OF_OBJECT;
+	gameArr[2][0] = FIRST_TYPE;
+	gameArr[2][1] = THIRD_TYPE;
+	gameArr[2][2] = PART_OF_OBJECT;
+	gameArr[2][3] = FIRST_TYPE;
+	gameArr[3][0] = PART_OF_OBJECT;
+	gameArr[3][1] = FOURTH_TYPE;
+	gameArr[3][2] = FOURTH_TYPE;
+	gameArr[3][3] = PART_OF_OBJECT;
+	gameArr[4][0] = FOURTH_TYPE;
+	gameArr[4][1] = EMPTY;
+	gameArr[4][2] = EMPTY;
+	gameArr[4][3] = FOURTH_TYPE;
+	selected.y = NONE_SELECTED;
+	selected.x = NONE_SELECTED;
 	turns = 0;
 	return TRUE;
 }
@@ -80,8 +80,8 @@ void CMFCApplication2Doc::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		ar << turns;
-		for (int i = 0; i < 5; i++){
-			for (int j = 0; j < 3; j++){
+		for (int i = 0; i < DOC_Y; i++){
+			for (int j = 0; j < DOC_X; j++){
 				ar << gameArr[i][j];
 			}
 		}
@@ -90,8 +90,8 @@ void CMFCApplication2Doc::Serialize(CArchive& ar)
 	else
 	{
 		ar >> turns;
-		for (int i = 0; i < 5; i++){
-			for (int j = 0; j < 3; j++){
+		for (int i = 0; i < DOC_Y; i++){
+			for (int j = 0; j < DOC_X; j++){
 				ar >> gameArr[i][j];
 			}
 		}
@@ -117,9 +117,9 @@ int CMFCApplication2Doc::getElement(const int i, const int j){
 }
 
 bool CMFCApplication2Doc::select(int i, int j){
-	if (gameArr[i][j] == -1 || isWon())
+	if (gameArr[i][j] == EMPTY || isWon())
 		return false;
-	if ((gameArr[i][j - 1] != 5 ) && ( gameArr[i][j - 1] != 2)){
+	if ((gameArr[i][j - 1] != THIRD_TYPE ) && ( gameArr[i][j - 1] != SECOND_TYPE)){
 		if (!gameArr[i][j]){
 			i--;
 			if (!gameArr[i][j])
@@ -157,11 +157,8 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j){
 	bool change = false;
 	if (!isWon())
 	switch (element_type){
-		case 1:
-		case 3:
-		case 4:
-		case 6:
-			if ((abs(selected.x - i) <= 3) && (selected.y - j == 0)){
+		case FIRST_TYPE:
+			if ((abs(selected.x - i) <= THIRD_TYPE) && (selected.y - j == PART_OF_OBJECT)){
 				if (i > selected.x){
 					if (gameArr[selected.x + 2][j] == -1){
 						gameArr[selected.x][selected.y] = -1;
@@ -172,103 +169,103 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j){
 						change = true;
 					}
 				}
-				else{
-					if (abs(selected.x - i) < 3 && gameArr[i][j] <= 0 && (gameArr[i + 1][j] <= 0 || gameArr[i + 1][j] == element_type)){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[selected.x + 1][selected.y] = -1;
+				else{	// EMPTY < PART_OF_OBJECT
+					if (abs(selected.x - i) < THIRD_TYPE && gameArr[i][j] <= PART_OF_OBJECT && (gameArr[i + 1][j] <= PART_OF_OBJECT || gameArr[i + 1][j] == element_type)){
+						gameArr[selected.x][selected.y] = EMPTY;
+						gameArr[selected.x + 1][selected.y] = EMPTY;
 						gameArr[i][j] = element_type;
-						gameArr[i + 1][j] = 0;
+						gameArr[i + 1][j] = PART_OF_OBJECT;
 						change = true;
 					}
 				}
 			}
 			if ((selected.x - i <= 0) && (abs(selected.y - j) == 1)){
 				if (selected.x - i == -1){
-					if (gameArr[i - 1][j] == -1 && gameArr[i][j] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[selected.x + 1][selected.y] = -1;
-						gameArr[i][j] = 0;
+					if (gameArr[i - 1][j] == EMPTY && gameArr[i][j] == EMPTY){
+						gameArr[selected.x][selected.y] = EMPTY;
+						gameArr[selected.x + 1][selected.y] = EMPTY;
+						gameArr[i][j] = PART_OF_OBJECT;
 						gameArr[i - 1][j] = element_type;
 						movedToY = i - 1;
 						change = true;
 					}
 				}
-					else{
-						if (selected.x - i == 0){
-							if (gameArr[i + 1][j] == -1 && gameArr[i][j] == -1){
-								gameArr[selected.x][selected.y] = -1;
-								gameArr[selected.x + 1][selected.y] = -1;
-								gameArr[i][j] = element_type;
-								gameArr[i + 1][j] = 0;
-								change = true;
-							}
+				else{
+					if (selected.x - i == 0){
+						if (gameArr[i + 1][j] == EMPTY && gameArr[i][j] == EMPTY){
+							gameArr[selected.x][selected.y] = EMPTY;
+							gameArr[selected.x + 1][selected.y] = EMPTY;
+							gameArr[i][j] = element_type;
+							gameArr[i + 1][j] = PART_OF_OBJECT;
+							change = true;
 						}
 					}
+				}
 			}
 			break;
-		case 2: {
-					if (selected.y - j == 0 || selected.y - j == -1){
-						if (selected.x - i == -2 && gameArr[selected.x + 2][selected.y] == -1 && gameArr[selected.x + 2][selected.y + 1] == -1){
-							gameArr[selected.x][selected.y] = -1;
-							gameArr[selected.x][selected.y + 1] = -1;
-							gameArr[selected.x + 1][selected.y] = element_type;
-							gameArr[selected.x + 2][selected.y] = 0;
-							gameArr[selected.x + 2][selected.y + 1] = 0;
-							movedToY = selected.y;
-							movedToX = selected.x + 1;
-							change = true;
-						}
-						if (selected.x - i == 1 && gameArr[selected.x - 1][selected.y] == -1 && gameArr[selected.x - 1][selected.y + 1] == -1){
-							gameArr[selected.x][selected.y] = 0;
-							gameArr[selected.x + 1][selected.y] = -1;
-							gameArr[selected.x + 1][selected.y + 1] = -1;
-							gameArr[selected.x - 1][selected.y + 1] = 0;
-							gameArr[selected.x - 1][selected.y] = element_type;
-							movedToY = selected.y;
-							movedToX = selected.x - 1;
-							change = true;
-						}
-					}
-					if (selected.x - i == 0 || selected.x - i == -1){
-						if (selected.y - j == -2 && gameArr[selected.x + 1][selected.y + 2] == -1 && gameArr[selected.x][selected.y + 2] == -1){
-							gameArr[selected.x][selected.y] = -1;
-							gameArr[selected.x + 1][selected.y] = -1;
-							gameArr[selected.x][selected.y + 1] = element_type;
-							gameArr[selected.x][selected.y + 2] = 0;
-							gameArr[selected.x + 1][selected.y + 2] = 0;
-							movedToY = selected.y + 1;
-							movedToX = selected.x;
-							change = true;
-						}
-						if (selected.y - j == 1 && gameArr[selected.x + 1][selected.y - 1] == -1 && gameArr[selected.x][selected.y - 1] == -1){
-							gameArr[selected.x][selected.y] = 0;
-							gameArr[selected.x][selected.y + 1] = -1;
-							gameArr[selected.x + 1][selected.y + 1] = -1;
-							gameArr[selected.x + 1][selected.y - 1] = 0;
-							gameArr[selected.x][selected.y - 1] = element_type;
-							movedToY = selected.y;
-							movedToX = selected.x - 1;
-							change = true;
-						}
-					}
-					break;
+		case SECOND_TYPE: {
+			if (selected.y - j == 0 || selected.y - j == -1){
+				if (selected.x - i == -2 && gameArr[selected.x + 2][selected.y] == EMPTY && gameArr[selected.x + 2][selected.y + 1] == EMPTY){
+					gameArr[selected.x][selected.y] = EMPTY;
+					gameArr[selected.x][selected.y + 1] = EMPTY;
+					gameArr[selected.x + 1][selected.y] = element_type;
+					gameArr[selected.x + 2][selected.y] = PART_OF_OBJECT;
+					gameArr[selected.x + 2][selected.y + 1] = PART_OF_OBJECT;
+					movedToY = selected.y;
+					movedToX = selected.x + 1;
+					change = true;
+				}
+				if (selected.x - i == 1 && gameArr[selected.x - 1][selected.y] == EMPTY && gameArr[selected.x - 1][selected.y + 1] == EMPTY){
+					gameArr[selected.x][selected.y] = PART_OF_OBJECT;
+					gameArr[selected.x + 1][selected.y] = EMPTY;
+					gameArr[selected.x + 1][selected.y + 1] = EMPTY;
+					gameArr[selected.x - 1][selected.y + 1] = PART_OF_OBJECT;
+					gameArr[selected.x - 1][selected.y] = element_type;
+					movedToY = selected.y;
+					movedToX = selected.x - 1;
+					change = true;
+				}
+			}
+			if (selected.x - i == 0 || selected.x - i == -1){
+				if (selected.y - j == -2 && gameArr[selected.x + 1][selected.y + 2] == EMPTY && gameArr[selected.x][selected.y + 2] == EMPTY){
+					gameArr[selected.x][selected.y] = EMPTY;
+					gameArr[selected.x + 1][selected.y] = EMPTY;
+					gameArr[selected.x][selected.y + 1] = element_type;
+					gameArr[selected.x][selected.y + 2] = PART_OF_OBJECT;
+					gameArr[selected.x + 1][selected.y + 2] = PART_OF_OBJECT;
+					movedToY = selected.y + 1;
+					movedToX = selected.x;
+					change = true;
+				}
+				if (selected.y - j == 1 && gameArr[selected.x + 1][selected.y - 1] == EMPTY && gameArr[selected.x][selected.y - 1] == EMPTY){
+					gameArr[selected.x][selected.y] = PART_OF_OBJECT;
+					gameArr[selected.x][selected.y + 1] = EMPTY;
+					gameArr[selected.x + 1][selected.y + 1] = EMPTY;
+					gameArr[selected.x + 1][selected.y - 1] = PART_OF_OBJECT;
+					gameArr[selected.x][selected.y - 1] = element_type;
+					movedToY = selected.y;
+					movedToX = selected.x - 1;
+					change = true;
+				}
+			}
+			break;
 		}
-		case 5: {
+		case THIRD_TYPE: {
 					if ((abs(selected.y - j) <= 3) && (selected.x - i == 0)){
 						if (j > selected.y){
-							if (gameArr[i][selected.y + 2] == -1){
-								gameArr[selected.x][selected.y] = -1;
-								gameArr[selected.x][selected.y + 1] = -1;
-								gameArr[i][j] = 0;
+							if (gameArr[i][selected.y + 2] == EMPTY){
+								gameArr[selected.x][selected.y] = EMPTY;
+								gameArr[selected.x][selected.y + 1] = EMPTY;
+								gameArr[i][j] = PART_OF_OBJECT;
 								gameArr[i][j - 1] = element_type;
 								movedToX = j - 1;
 								change = true;
 							}
 						}
 						else{
-							if (abs(selected.y - j) < 3 && gameArr[i][j] <= 0 && (gameArr[i][j + 1] <= 0 || gameArr[i][j + 1] == element_type)){
-								gameArr[selected.x][selected.y] = -1;
-								gameArr[selected.x][selected.y + 1] = -1;
+							if (abs(selected.y - j) < 3 && gameArr[i][j] <= 0 && (gameArr[i][j + 1] <= PART_OF_OBJECT || gameArr[i][j + 1] == element_type)){
+								gameArr[selected.x][selected.y] = EMPTY;
+								gameArr[selected.x][selected.y + 1] = EMPTY;
 								gameArr[i][j] = element_type;
 								gameArr[i][j + 1] = 0;
 								change = true;
@@ -277,10 +274,10 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j){
 					}
 					if ((selected.y - j <= 0) && (abs(selected.x - i) == 1)){
 						if (selected.y - j == -1){
-							if (gameArr[i][j - 1] == -1 && gameArr[i][j] == -1){
-								gameArr[selected.x][selected.y] = -1;
-								gameArr[selected.x][selected.y + 1] = -1;
-								gameArr[i][j] = 0;
+							if (gameArr[i][j - 1] == -1 && gameArr[i][j] == EMPTY){
+								gameArr[selected.x][selected.y] = EMPTY;
+								gameArr[selected.x][selected.y + 1] = EMPTY;
+								gameArr[i][j] = PART_OF_OBJECT;
 								gameArr[i][j - 1] = element_type;
 								movedToX = j - 1;
 								change = true;
@@ -288,9 +285,9 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j){
 						}
 						else{
 							if (selected.y - j == 0){
-								if (gameArr[i][j + 1] == -1 && gameArr[i][j] == -1){
-									gameArr[selected.x][selected.y] = -1;
-									gameArr[selected.x][selected.y + 1] = -1;
+								if (gameArr[i][j + 1] == EMPTY && gameArr[i][j] == EMPTY){
+									gameArr[selected.x][selected.y] = EMPTY;
+									gameArr[selected.x][selected.y + 1] = EMPTY;
 									gameArr[i][j] = element_type;
 									gameArr[i][j + 1] = 0;
 									change = true;
@@ -300,54 +297,51 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j){
 					}
 					break;
 					break;
-		}
-		case 7:
-		case 8:
-		case 9:
-		case 10: {
-					 if (((abs(selected.y - j) == 1) || (abs(selected.x - i) == 1) ) && (abs(selected.x - i) + abs(selected.y - j) < 2)){
-						 gameArr[selected.x][selected.y] = -1;
-						 gameArr[i][j] = element_type;
-						 change = true;
-					 }
-					 if (selected.x - i == 0)
-						 switch (selected.y - j){
-							case -2:{
-										if (gameArr[i][j - 1] == -1){
-											gameArr[selected.x][selected.y] = -1;
-											gameArr[i][j] = element_type;
-											change = true;
-										}
-										break;
+			}
+			case FOURTH_TYPE: {
+					if (((abs(selected.y - j) == 1) || (abs(selected.x - i) == 1) ) && (abs(selected.x - i) + abs(selected.y - j) < 2)){
+						gameArr[selected.x][selected.y] = EMPTY;
+						gameArr[i][j] = element_type;
+						change = true;
+					}
+					if (selected.x - i == 0)
+						switch (selected.y - j){
+						case -2:{
+							if (gameArr[i][j - 1] == EMPTY){
+								gameArr[selected.x][selected.y] = EMPTY;
+								gameArr[i][j] = element_type;
+								change = true;
 							}
-							case 2:{
-									if (gameArr[i][j + 1] == -1){
-										gameArr[selected.x][selected.y] = -1;
-										gameArr[i][j] = element_type;
-										change = true;
-									}
-									break;
-							}
+							break;
 						}
-					 if (selected.y - j == 0)
-					 switch (selected.x - i){
-					 case -2:{
-								 if (gameArr[i - 1][j] == -1){
-									 gameArr[selected.x][selected.y] = -1;
-									 gameArr[i][j] = element_type;
-									 change = true;
-								 }
-								 break;
-					 }
-					 case 2:{
-								if (gameArr[i + 1][j] == -1){
-									gameArr[selected.x][selected.y] = -1;
-									gameArr[i][j] = element_type;
-									change = true;
-								}
-								break;
-					 }
-					 }
+						case 2:{
+							if (gameArr[i][j + 1] == EMPTY){
+								gameArr[selected.x][selected.y] = EMPTY;
+								gameArr[i][j] = element_type;
+								change = true;
+							}
+							break;
+						}
+					}
+					if (selected.y - j == 0)
+					switch (selected.x - i){
+					case -2:{
+						if (gameArr[i - 1][j] == EMPTY){
+						gameArr[selected.x][selected.y] = EMPTY;
+						gameArr[i][j] = element_type;
+						change = true;
+					}
+					break;
+					}
+					case 2:{
+						if (gameArr[i + 1][j] == EMPTY){
+						gameArr[selected.x][selected.y] = EMPTY;
+						gameArr[i][j] = element_type;
+						change = true;
+					}
+					break;
+					}
+			}
 		}
 	}
 	i = movedToX;
@@ -364,203 +358,36 @@ bool CMFCApplication2Doc::ForceMoveTo(int& i, int& j){
 	if (!isWon())
 		switch (element_type){
 		case 1:
-		case 3:
-		case 4:
-		case 6:
-			if ((abs(selected.x - i) <= 3) && (selected.y - j == 0)){
-				if (i > selected.x){
-					if (gameArr[selected.x + 2][j] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[selected.x + 1][selected.y] = -1;
-						gameArr[i][j] = 0;
-						gameArr[i - 1][j] = element_type;
-						movedToY = i - 1;
-						change = true;
-					}
-				}
-				else{
-					if (abs(selected.x - i) < 3 && gameArr[i][j] <= 0 && (gameArr[i + 1][j] <= 0 || gameArr[i + 1][j] == element_type)){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[selected.x + 1][selected.y] = -1;
-						gameArr[i][j] = element_type;
-						gameArr[i + 1][j] = 0;
-						change = true;
-					}
-				}
-			}
-			if ((selected.x - i <= 0) && (abs(selected.y - j) == 1)){
-				if (selected.x - i == -1){
-					if (gameArr[i - 1][j] == -1 && gameArr[i][j] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[selected.x + 1][selected.y] = -1;
-						gameArr[i][j] = 0;
-						gameArr[i - 1][j] = element_type;
-						movedToY = i - 1;
-						change = true;
-					}
-				}
-				else{
-					if (selected.x - i == 0){
-						if (gameArr[i + 1][j] == -1 && gameArr[i][j] == -1){
-							gameArr[selected.x][selected.y] = -1;
-							gameArr[selected.x + 1][selected.y] = -1;
-							gameArr[i][j] = element_type;
-							gameArr[i + 1][j] = 0;
-							change = true;
-						}
-					}
-				}
-			}
+			gameArr[selected.x][selected.y] = -1;
+			gameArr[selected.x][selected.y + 1] = -1;
+			gameArr[i][j] = 1;
+			gameArr[i][j+1] = 0;
 			break;
 		case 2: {
-			if (selected.y - j == 0 || selected.y - j == -1){
-				if (selected.x - i == -2 && gameArr[selected.x + 2][selected.y] == -1 && gameArr[selected.x + 2][selected.y + 1] == -1){
-					gameArr[selected.x][selected.y] = -1;
-					gameArr[selected.x][selected.y + 1] = -1;
-					gameArr[selected.x + 1][selected.y] = element_type;
-					gameArr[selected.x + 2][selected.y] = 0;
-					gameArr[selected.x + 2][selected.y + 1] = 0;
-					movedToY = selected.y;
-					movedToX = selected.x + 1;
-					change = true;
-				}
-				if (selected.x - i == 1 && gameArr[selected.x - 1][selected.y] == -1 && gameArr[selected.x - 1][selected.y + 1] == -1){
-					gameArr[selected.x][selected.y] = 0;
-					gameArr[selected.x + 1][selected.y] = -1;
-					gameArr[selected.x + 1][selected.y + 1] = -1;
-					gameArr[selected.x - 1][selected.y + 1] = 0;
-					gameArr[selected.x - 1][selected.y] = element_type;
-					movedToY = selected.y;
-					movedToX = selected.x - 1;
-					change = true;
-				}
-			}
-			if (selected.x - i == 0 || selected.x - i == -1){
-				if (selected.y - j == -2 && gameArr[selected.x + 1][selected.y + 2] == -1 && gameArr[selected.x][selected.y + 2] == -1){
-					gameArr[selected.x][selected.y] = -1;
-					gameArr[selected.x + 1][selected.y] = -1;
-					gameArr[selected.x][selected.y + 1] = element_type;
-					gameArr[selected.x][selected.y + 2] = 0;
-					gameArr[selected.x + 1][selected.y + 2] = 0;
-					movedToY = selected.y + 1;
-					movedToX = selected.x;
-					change = true;
-				}
-				if (selected.y - j == 1 && gameArr[selected.x + 1][selected.y - 1] == -1 && gameArr[selected.x][selected.y - 1] == -1){
-					gameArr[selected.x][selected.y] = 0;
-					gameArr[selected.x][selected.y + 1] = -1;
-					gameArr[selected.x + 1][selected.y + 1] = -1;
-					gameArr[selected.x + 1][selected.y - 1] = 0;
-					gameArr[selected.x][selected.y - 1] = element_type;
-					movedToY = selected.y;
-					movedToX = selected.x - 1;
-					change = true;
-				}
-			}
+			gameArr[selected.x][selected.y] = -1;
+			gameArr[selected.x][selected.y + 1] = -1;
+			gameArr[selected.x + 1][selected.y] = -1;
+			gameArr[selected.x + 1][selected.y + 1] = -1;
+			gameArr[i][j] = 2;
+			gameArr[i][j + 1] = 0;
+			gameArr[i + 1][j] = 0;
+			gameArr[i + 1][j + 1] = 0;
 			break;
 		}
-		case 5: {
-			if ((abs(selected.y - j) <= 3) && (selected.x - i == 0)){
-				if (j > selected.y){
-					if (gameArr[i][selected.y + 2] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[selected.x][selected.y + 1] = -1;
-						gameArr[i][j] = 0;
-						gameArr[i][j - 1] = element_type;
-						movedToX = j - 1;
-						change = true;
-					}
-				}
-				else{
-					if (abs(selected.y - j) < 3 && gameArr[i][j] <= 0 && (gameArr[i][j + 1] <= 0 || gameArr[i][j + 1] == element_type)){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[selected.x][selected.y + 1] = -1;
-						gameArr[i][j] = element_type;
-						gameArr[i][j + 1] = 0;
-						change = true;
-					}
-				}
-			}
-			if ((selected.y - j <= 0) && (abs(selected.x - i) == 1)){
-				if (selected.y - j == -1){
-					if (gameArr[i][j - 1] == -1 && gameArr[i][j] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[selected.x][selected.y + 1] = -1;
-						gameArr[i][j] = 0;
-						gameArr[i][j - 1] = element_type;
-						movedToX = j - 1;
-						change = true;
-					}
-				}
-				else{
-					if (selected.y - j == 0){
-						if (gameArr[i][j + 1] == -1 && gameArr[i][j] == -1){
-							gameArr[selected.x][selected.y] = -1;
-							gameArr[selected.x][selected.y + 1] = -1;
-							gameArr[i][j] = element_type;
-							gameArr[i][j + 1] = 0;
-							change = true;
-						}
-					}
-				}
-			}
-			break;
+		case 3: {
+			gameArr[selected.x][selected.y] = -1;
+			gameArr[selected.x + 1][selected.y] = -1;
+			gameArr[i][j] = 3;
+			gameArr[i + 1][j] = 0;
 			break;
 		}
-		case 7:
-		case 8:
-		case 9:
-		case 10: {
-			if (((abs(selected.y - j) == 1) || (abs(selected.x - i) == 1)) && (abs(selected.x - i) + abs(selected.y - j) < 2)){
-				gameArr[selected.x][selected.y] = -1;
-				gameArr[i][j] = element_type;
-				change = true;
-			}
-			if (selected.x - i == 0)
-				switch (selected.y - j){
-				case -2:{
-					if (gameArr[i][j - 1] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[i][j] = element_type;
-						change = true;
-					}
-					break;
-				}
-				case 2:{
-					if (gameArr[i][j + 1] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[i][j] = element_type;
-						change = true;
-					}
-					break;
+		case 4: {
+			gameArr[selected.x][selected.y] = -1;
+			gameArr[i][j] = 4;
 				}
 			}
-			if (selected.y - j == 0)
-				switch (selected.x - i){
-				case -2:{
-					if (gameArr[i - 1][j] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[i][j] = element_type;
-						change = true;
-					}
-					break;
-				}
-				case 2:{
-					if (gameArr[i + 1][j] == -1){
-						gameArr[selected.x][selected.y] = -1;
-						gameArr[i][j] = element_type;
-						change = true;
-					}
-					break;
-				}
-			}
-		}
-	}
-	i = movedToX;
-	j = movedToY;
 	return change;
 }
-
 
 bool CMFCApplication2Doc::isWon(){
 	return gameArr[WIN_Y][WIN_X] == 2;
