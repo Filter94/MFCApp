@@ -15,6 +15,7 @@
 #define PART_OF_OBJECT                  0
 #define EMPTY                           -1
 #define NONE_SELECTED                   -1
+#define WIN_TYPE                        2
 #define FRAME_WIDTH                     10
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100

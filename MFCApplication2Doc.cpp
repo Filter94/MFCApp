@@ -146,8 +146,8 @@ void CMFCApplication2Doc::TryToMoveTo(int i, int j){
 		history.makeUndoRecord(record);
 		history.flushRedo();
 	}
-	selected.y = -1;
-	selected.x = -1;
+	selected.y = NONE_SELECTED;
+	selected.x = NONE_SELECTED;
 }
 
 bool CMFCApplication2Doc::MoveTo(int& i, int& j){
@@ -357,40 +357,40 @@ bool CMFCApplication2Doc::ForceMoveTo(int& i, int& j){
 	bool change = false;
 	if (!isWon())
 		switch (element_type){
-		case 1:
-			gameArr[selected.x][selected.y] = -1;
-			gameArr[selected.x][selected.y + 1] = -1;
-			gameArr[i][j] = 1;
+		case FIRST_TYPE:
+			gameArr[selected.x][selected.y] = EMPTY;
+			gameArr[selected.x][selected.y + 1] = EMPTY;
+			gameArr[i][j] = element_type;
 			gameArr[i][j+1] = 0;
 			break;
-		case 2: {
-			gameArr[selected.x][selected.y] = -1;
-			gameArr[selected.x][selected.y + 1] = -1;
-			gameArr[selected.x + 1][selected.y] = -1;
-			gameArr[selected.x + 1][selected.y + 1] = -1;
-			gameArr[i][j] = 2;
-			gameArr[i][j + 1] = 0;
-			gameArr[i + 1][j] = 0;
-			gameArr[i + 1][j + 1] = 0;
+		case SECOND_TYPE: {
+			gameArr[selected.x][selected.y] = EMPTY;
+			gameArr[selected.x][selected.y + 1] = EMPTY;
+			gameArr[selected.x + 1][selected.y] = EMPTY;
+			gameArr[selected.x + 1][selected.y + 1] = EMPTY;
+			gameArr[i][j] = element_type;
+			gameArr[i][j + 1] = PART_OF_OBJECT;
+			gameArr[i + 1][j] = PART_OF_OBJECT;
+			gameArr[i + 1][j + 1] = PART_OF_OBJECT;
 			break;
 		}
-		case 3: {
-			gameArr[selected.x][selected.y] = -1;
-			gameArr[selected.x + 1][selected.y] = -1;
-			gameArr[i][j] = 3;
-			gameArr[i + 1][j] = 0;
+		case THIRD_TYPE: {
+			gameArr[selected.x][selected.y] = EMPTY;
+			gameArr[selected.x + 1][selected.y] = EMPTY;
+			gameArr[i][j] = element_type;
+			gameArr[i + 1][j] = PART_OF_OBJECT;
 			break;
 		}
-		case 4: {
-			gameArr[selected.x][selected.y] = -1;
-			gameArr[i][j] = 4;
+		case FOURTH_TYPE: {
+			gameArr[selected.x][selected.y] = EMPTY;
+			gameArr[i][j] = element_type;
 				}
 			}
 	return change;
 }
 
 bool CMFCApplication2Doc::isWon(){
-	return gameArr[WIN_Y][WIN_X] == 2;
+	return gameArr[WIN_Y][WIN_X] == WIN_TYPE;
 }
 
 int CMFCApplication2Doc::getTurns(){
@@ -418,8 +418,8 @@ void CMFCApplication2Doc::OnEditUndo(){
 	History::HistoryRecord step;
 	step = history.makeUndo();
 	ApplyHistory(step.matrix);
-	selected.x = -1;
-	selected.y = -1;
+	selected.x = NONE_SELECTED;
+	selected.y = NONE_SELECTED;
 	UpdateAllViews(NULL);
 }
 
@@ -430,8 +430,8 @@ void CMFCApplication2Doc::OnEditRedo(){
 	History::HistoryRecord step;
 	step = history.makeRedo();
 	ApplyHistory(step.matrix);
-	selected.x = -1;
-	selected.y = -1;
+	selected.x = NONE_SELECTED;
+	selected.y = NONE_SELECTED;
 	UpdateAllViews(NULL);
 }
 
