@@ -77,37 +77,45 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 	rCellRect.top = rOuterRect.top;
 	int g, k;
 	pDoc->getSelected(g, k);
-	for (int i = 0; i < DOC_Y; i++){
+	for (int i = 0; i < DOC_Y; i++)
+	{
 		rCellRect.left = rOuterRect.left;
-		for (int j = 0; j < DOC_X; j++){
+		for (int j = 0; j < DOC_X; j++)
+		{
 			int element_type = pDoc -> getElement(i, j);
-			switch (element_type){
+			switch (element_type)
+			{
 				case FIRST_TYPE: 
 					rCellRect.right = rCellRect.left + CELL_SIZE;
 					rCellRect.bottom = rCellRect.top + 2 * CELL_SIZE;
 					break;
-				case SECOND_TYPE: {
+				case SECOND_TYPE: 
+				{
 							rCellRect.right = rCellRect.left + 2 * CELL_SIZE;
 							rCellRect.bottom = rCellRect.top + 2 * CELL_SIZE;
 							break;
 				}
-				case THIRD_TYPE: {
+				case THIRD_TYPE: 
+				{
 							rCellRect.right = rCellRect.left + 2 * CELL_SIZE;
 							rCellRect.bottom = rCellRect.top + CELL_SIZE;
 							break;
 				}
-				case FOURTH_TYPE: {
+				case FOURTH_TYPE: 
+				{
 							rCellRect.right = rCellRect.left + CELL_SIZE;
 							rCellRect.bottom = rCellRect.top + CELL_SIZE;
 							break;
 				}
 			}	//	Any type of object is > than EMPTY of PART_OF_OBJECT
-			if (element_type > PART_OF_OBJECT){
+			if (element_type > PART_OF_OBJECT)
+			{
 				pDC->SelectObject(pCellPen);
 				pDC->SelectObject(bCellBrush);
 				pDC->Rectangle(rCellRect);
 			}
-			if ((g >= PART_OF_OBJECT && k >= PART_OF_OBJECT) && ((i == g) && (j == k))){
+			if ((g >= PART_OF_OBJECT && k >= PART_OF_OBJECT) && ((i == g) && (j == k)))
+			{
 				rSelectedRect.top = rCellRect.top;
 				rSelectedRect.bottom = rCellRect.bottom;
 				rSelectedRect.right = rCellRect.right;
@@ -117,7 +125,8 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 		}
 		rCellRect.top += CELL_SIZE;
 	}
-	if ((g >= PART_OF_OBJECT && k >= PART_OF_OBJECT)){
+	if ((g >= PART_OF_OBJECT && k >= PART_OF_OBJECT))
+	{
 		pDC->SelectObject(pSelectPen);
 		pDC->SelectObject(bCellBrush);
 		pDC->Rectangle(rSelectedRect);
