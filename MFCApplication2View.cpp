@@ -188,7 +188,8 @@ CMFCApplication2Doc* CMFCApplication2View::GetDocument() const // встроена неотл
 
 // обработчики сообщений CMFCApplication2View
 
-bool clickInDocument(const CMFCApplication2View& obj, CPoint pPoint){
+bool clickInDocument(const CMFCApplication2View& obj, CPoint pPoint)
+{
 	CRect rect, rOuterRect, rCellRect;
 	obj.GetClientRect(&rect);
 	rOuterRect.top = rect.bottom / 2 - (CELL_SIZE * DOC_Y) / 2;
@@ -200,7 +201,8 @@ bool clickInDocument(const CMFCApplication2View& obj, CPoint pPoint){
 	return false;
 }
 
-void countIndexes(CMFCApplication2View& obj, CPoint& pPoint){
+void countIndexes(CMFCApplication2View& obj, CPoint& pPoint)
+{
 	CRect rect, rOuterRect, rCellRect;
 	obj.GetClientRect(&rect);
 	rOuterRect.top = rect.bottom / 2 - (CELL_SIZE * DOC_Y) / 2;
@@ -212,8 +214,10 @@ void countIndexes(CMFCApplication2View& obj, CPoint& pPoint){
 	rCellRect.right = rOuterRect.right;
 	rCellRect.left = rOuterRect.left;
 	int i;
-	for (i = 0; i < DOC_Y; ++i){
-		if (PtInRect(rCellRect, pPoint)){
+	for (i = 0; i < DOC_Y; ++i)
+	{
+		if (PtInRect(rCellRect, pPoint))
+		{
 			break;
 		}
 		rCellRect.top += CELL_SIZE;
@@ -223,8 +227,10 @@ void countIndexes(CMFCApplication2View& obj, CPoint& pPoint){
 	rCellRect.bottom = rOuterRect.bottom;
 	rCellRect.left = rOuterRect.left;
 	rCellRect.right = rOuterRect.left +CELL_SIZE;
-	for (int j = 0; j < DOC_X; j++){
-		if (PtInRect(rCellRect, pPoint)){
+	for (int j = 0; j < DOC_X; j++)
+	{
+		if (PtInRect(rCellRect, pPoint))
+		{
 			pPoint.x = j, pPoint.y = i;
 			break;
 		}
@@ -238,7 +244,8 @@ void CMFCApplication2View::OnLButtonDown(UINT nFlags,CPoint pPoint)
 	CPoint indexes(pPoint.x, pPoint.y);
 	indexes.x = pPoint.x;
 	indexes.y = pPoint.y;
-	if (clickInDocument(*this, pPoint)){
+	if (clickInDocument(*this, pPoint))
+	{
 		countIndexes(*this, indexes);
 		CMFCApplication2Doc* pDoc;
 		pDoc = GetDocument();
@@ -250,7 +257,8 @@ void CMFCApplication2View::OnLButtonDown(UINT nFlags,CPoint pPoint)
 }
 
 
-void CMFCApplication2View::OnEditBackgroundcolor(){
+void CMFCApplication2View::OnEditBackgroundcolor()
+{
 	CColorDialog cc;
 	if (cc.DoModal() == IDOK)
 	{
@@ -260,7 +268,8 @@ void CMFCApplication2View::OnEditBackgroundcolor(){
 }
 
 
-void CMFCApplication2View::OnEditRectanglesColor(){
+void CMFCApplication2View::OnEditRectanglesColor()
+{
 	CColorDialog cc;
 	if (cc.DoModal() == IDOK)
 	{
@@ -270,7 +279,8 @@ void CMFCApplication2View::OnEditRectanglesColor(){
 }
 
 
-void CMFCApplication2View::OnEditScoreFont(){
+void CMFCApplication2View::OnEditScoreFont()
+{
 	
 	LOGFONT lf;
 	scoreFont->GetLogFont(&lf);
