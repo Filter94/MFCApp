@@ -129,3 +129,14 @@ CArchive& operator << (CArchive& stream, const History::Cell cell)
 	stream << cell.x << cell.y;
 	return stream;
 }
+
+stack<History::HistoryRecord> History::getUndoStackReversedCopy(){
+	stack<History::HistoryRecord> undoCopy(UndoStack);
+	stack<History::HistoryRecord> stackBuf;
+	while (undoCopy.size())
+	{
+		stackBuf.push(undoCopy.top());
+		undoCopy.pop();
+	}
+	return stackBuf;
+}

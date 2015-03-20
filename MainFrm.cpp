@@ -18,6 +18,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
 	ON_MESSAGE(WM_USER, &CMainFrame::OnStatusBarUpdate)
+	ON_WM_GETMINMAXINFO()
 
 END_MESSAGE_MAP()
 
@@ -77,9 +78,17 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 LRESULT CMainFrame::OnStatusBarUpdate(WPARAM wParam, LPARAM lparam)
 {
 	// Load string and update status bar
-	CString* str = (CString *)(LPCTSTR)lparam;
+	CString* str = (CString *)lparam;
 	m_wndStatusBar.SetPaneText(0, *str);
+	delete str;
 	return 0;
+}
+
+
+void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
+{
+	lpMMI->ptMinTrackSize.x = 750;
+	lpMMI->ptMinTrackSize.y = 750;
 }
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)

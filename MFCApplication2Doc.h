@@ -3,6 +3,7 @@
 //
 
 #include "History.h"
+#include"MyDialog.h"
 #pragma once
 
 class CMFCApplication2Doc : public CDocument
@@ -19,6 +20,8 @@ protected:
 	int turns;
 	CPoint selected;
 	History history;
+	MyDialog m_wndMyDlg;
+	CString storyFormat;
 // Операции
 public:
 	bool select(int i, int j);	//	True if there is no errors
@@ -36,6 +39,8 @@ public:
 	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
 	virtual void OnUpdateEditUndo(CCmdUI *pCmdUI);
 	virtual void OnUpdateEditRedo(CCmdUI *pCmdUI);
+	virtual void FillHistoryView();
+	void addStringInListBox(CString str);
 	virtual void OnEditUndo();
 	virtual void OnEditRedo();
 #ifdef SHARED_HANDLERS

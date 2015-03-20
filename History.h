@@ -43,6 +43,7 @@ public:
 	bool canRedo();
 	void flushHistory();
 	void flushRedo();
+	stack<HistoryRecord> getUndoStackReversedCopy();
 	friend CArchive& operator << (CArchive&, const History);
 	friend CArchive& operator >> (CArchive&, History&);
 private:

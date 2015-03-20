@@ -36,6 +36,7 @@ protected:  // встроенные члены панели элементов управления
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg LRESULT OnStatusBarUpdate(WPARAM wParam, LPARAM);
+	void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
 	DECLARE_MESSAGE_MAP()
 
 };

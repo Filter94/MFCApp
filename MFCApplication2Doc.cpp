@@ -33,9 +33,7 @@ END_MESSAGE_MAP()
 
 CMFCApplication2Doc::CMFCApplication2Doc()
 {
-	// TODO: добавьте код для одноразового вызова конструктора	 { { 1, 2, 2, 1 }, { 1, 2, 2, 1 }, { 1, 3, 3, 1 }, { 1, 4, 4, 1 }, { 4, 0, 0, 4 } }
-
-	//CMainFrame *pMainWnd = (CMainFrame *)AfxGetMainWnd();
+	storyFormat.LoadString(MOVED_MSG);
 }
 
 CMFCApplication2Doc::~CMFCApplication2Doc()
@@ -44,6 +42,8 @@ CMFCApplication2Doc::~CMFCApplication2Doc()
 
 BOOL CMFCApplication2Doc::OnNewDocument()
 {
+	m_wndMyDlg.clearList();
+	history.flushHistory();
 	gameArr[0][0] = FIRST_TYPE;
 	gameArr[0][1] = SECOND_TYPE;
 	gameArr[0][2] = PART_OF_OBJECT;
@@ -100,12 +100,26 @@ void CMFCApplication2Doc::Serialize(CArchive& ar)
 			}
 		}
 		ar >> history;
+		stack<History::HistoryRecord> undoCopy;
+		undoCopy = history.getUndoStackReversedCopy();
+		while (undoCopy.size()){
+			History::HistoryRecord record = undoCopy.top();
+			CString stringBuf;
+			stringBuf.Format(storyFormat, record.before.x, record.before.y, record.after.x, record.after.y);
+			m_wndMyDlg.addString(stringBuf);
+			undoCopy.pop();
+		}
 	}
+}
+
+void CMFCApplication2Doc::FillHistoryView(){
+	
 }
 
 
 BOOL CMFCApplication2Doc::OnOpenDocument(LPCTSTR lpszPathName)
 {
+	m_wndMyDlg.clearList();
 	CFile storage;
 	if (!storage.Open(lpszPathName, CFile::modeRead))
 		return FALSE;
@@ -157,6 +171,9 @@ void CMFCApplication2Doc::TryToMoveTo(int& i, int& j)
 		History::Cell before(selected.x, selected.y);
 		History::Cell after(j, i);
 		History::HistoryRecord record(before, after);
+		CString stringBuf;
+		stringBuf.Format(storyFormat, record.before.x, record.before.y, record.after.x, record.after.y);
+		m_wndMyDlg.addString(stringBuf);
 		history.makeUndoRecord(record);
 		history.flushRedo();
 	}
@@ -459,6 +476,11 @@ bool CMFCApplication2Doc::ForceMoveTo(int& i, int& j)
 	return change;
 }
 
+void CMFCApplication2Doc::addStringInListBox(CString str)
+{
+	m_wndMyDlg.addString(str);
+}
+
 bool CMFCApplication2Doc::isWon()
 {
 	return gameArr[WIN_Y][WIN_X] == WIN_TYPE;
@@ -497,6 +519,7 @@ void CMFCApplication2Doc::OnEditUndo()
 	ForceMoveTo(toI, toJ);
 	selected.x = NONE_SELECTED;
 	selected.y = NONE_SELECTED;
+	m_wndMyDlg.deleteString();
 	UpdateAllViews(NULL);
 }
 
@@ -514,6 +537,9 @@ void CMFCApplication2Doc::OnEditRedo()
 	ForceMoveTo(toI, toJ);
 	selected.x = NONE_SELECTED;
 	selected.y = NONE_SELECTED;
+	CString stringBuf;
+	stringBuf.Format(storyFormat, step.before.x, step.before.y, step.after.x, step.after.y);
+	m_wndMyDlg.addString(stringBuf);
 	UpdateAllViews(NULL);
 }
 

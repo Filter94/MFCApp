@@ -39,7 +39,7 @@ END_MESSAGE_MAP()
 CMFCApplication2View::CMFCApplication2View()
 {
 	scoreFont = new CFont;
-	scoreFont -> CreatePointFont(400, _T("Baskerville Old Face"));
+	scoreFont->CreatePointFont(400, _T("Baskerville Old Face"));
 	selectedMsg.LoadString(SELECTED_MSG);
 	movedMsg.LoadString(MOVED_MSG);
 	cannotMsg.LoadString(CANNOT_MOVE);
@@ -109,31 +109,31 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 		rCellRect.left = rOuterRect.left;
 		for (int j = 0; j < DOC_X; j++)
 		{
-			int element_type = pDoc -> getElement(i, j);
+			int element_type = pDoc->getElement(i, j);
 			switch (element_type)
 			{
-				case FIRST_TYPE: 
-					rCellRect.right = rCellRect.left + CELL_SIZE;
-					rCellRect.bottom = rCellRect.top + 2 * CELL_SIZE;
-					break;
-				case SECOND_TYPE: 
-				{
-							rCellRect.right = rCellRect.left + 2 * CELL_SIZE;
-							rCellRect.bottom = rCellRect.top + 2 * CELL_SIZE;
-							break;
-				}
-				case THIRD_TYPE: 
-				{
-							rCellRect.right = rCellRect.left + 2 * CELL_SIZE;
-							rCellRect.bottom = rCellRect.top + CELL_SIZE;
-							break;
-				}
-				case FOURTH_TYPE: 
-				{
-							rCellRect.right = rCellRect.left + CELL_SIZE;
-							rCellRect.bottom = rCellRect.top + CELL_SIZE;
-							break;
-				}
+			case FIRST_TYPE:
+				rCellRect.right = rCellRect.left + CELL_SIZE;
+				rCellRect.bottom = rCellRect.top + 2 * CELL_SIZE;
+				break;
+			case SECOND_TYPE:
+			{
+				rCellRect.right = rCellRect.left + 2 * CELL_SIZE;
+				rCellRect.bottom = rCellRect.top + 2 * CELL_SIZE;
+				break;
+			}
+			case THIRD_TYPE:
+			{
+				rCellRect.right = rCellRect.left + 2 * CELL_SIZE;
+				rCellRect.bottom = rCellRect.top + CELL_SIZE;
+				break;
+			}
+			case FOURTH_TYPE:
+			{
+				rCellRect.right = rCellRect.left + CELL_SIZE;
+				rCellRect.bottom = rCellRect.top + CELL_SIZE;
+				break;
+			}
 			}	//	Any type of object is > than EMPTY of PART_OF_OBJECT
 			if (element_type > PART_OF_OBJECT)
 			{
@@ -264,7 +264,7 @@ void countIndexes(CMFCApplication2View& obj, CPoint& pPoint)
 	rCellRect.top = rOuterRect.top;
 	rCellRect.bottom = rOuterRect.bottom;
 	rCellRect.left = rOuterRect.left;
-	rCellRect.right = rOuterRect.left +CELL_SIZE;
+	rCellRect.right = rOuterRect.left + CELL_SIZE;
 	for (int j = 0; j < DOC_X; j++)
 	{
 		if (PtInRect(rCellRect, pPoint))
@@ -287,25 +287,30 @@ void CMFCApplication2View::OnLButtonDown(UINT nFlags, CPoint pPoint)
 		countIndexes(*this, indexes);
 		CMFCApplication2Doc* pDoc;
 		pDoc = GetDocument();
-		pDoc -> getSelected(selectedX, selectedY);
-		CString * cszTemp = new CString;
+		pDoc->getSelected(selectedX, selectedY);
+		CString* cszTemp = new CString;
 		if (!pDoc->select(indexes.y, indexes.x)){
-			int movedToX = indexes.x;
-			int movedToY = indexes.y;
-			pDoc->TryToMoveTo(movedToY, movedToX);
-			if (movedToX != -1 && movedToY != -1){
-				cszTemp -> Format(movedMsg, selectedX, selectedY, movedToX, movedToY);
-				AfxGetMainWnd()->PostMessage(WM_USER, 0, (LPARAM)(LPCTSTR)cszTemp);
-			}
-			else{
-				AfxGetMainWnd()->PostMessage(WM_USER, 0, (LPARAM)(LPCTSTR)cszTemp);
+			int i, j;
+			pDoc->getSelected(i, j);
+			if (i != -1 && j != -1){
+				int movedToX = indexes.x;
+				int movedToY = indexes.y;
+				pDoc->TryToMoveTo(movedToY, movedToX);
+				if (movedToX != -1 && movedToY != -1){
+					cszTemp->Format(movedMsg, selectedX, selectedY, movedToX, movedToY);
+					AfxGetMainWnd()->PostMessage(WM_USER, 0, (LPARAM)(LPCSTR)cszTemp);
+				}
+				else{
+					cszTemp = new CString(cannotMsg);
+					AfxGetMainWnd()->PostMessage(WM_USER, 0, (LPARAM)(LPCSTR)cszTemp);
+				}
 			}
 		}
 		else{
 			int i, j;
-			pDoc -> getSelected(i, j);
-			cszTemp -> Format(selectedMsg, i, j);
-			AfxGetMainWnd()->SendMessage(WM_USER, 0, (LPARAM)(LPCTSTR)cszTemp);
+			pDoc->getSelected(i, j);
+			cszTemp->Format(selectedMsg, i, j);
+			AfxGetMainWnd()->SendMessage(WM_USER, 0, (LPARAM)cszTemp);
 		}
 		Invalidate();
 	}
@@ -336,7 +341,7 @@ void CMFCApplication2View::OnEditRectanglesColor()
 
 void CMFCApplication2View::OnEditScoreFont()
 {
-	
+
 	LOGFONT lf;
 	scoreFont->GetLogFont(&lf);
 	CFontDialog cc(&lf);
