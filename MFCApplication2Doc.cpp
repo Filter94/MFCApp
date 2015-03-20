@@ -147,7 +147,7 @@ void CMFCApplication2Doc::getSelected(int& i, int& j)
 	j = selected.y;
 }
 
-void CMFCApplication2Doc::TryToMoveTo(int i, int j)
+void CMFCApplication2Doc::TryToMoveTo(int& i, int& j)
 {
 	bool moved;
 	moved = MoveTo(i, j);
@@ -159,6 +159,10 @@ void CMFCApplication2Doc::TryToMoveTo(int i, int j)
 		History::HistoryRecord record(before, after);
 		history.makeUndoRecord(record);
 		history.flushRedo();
+	}
+	else{
+		i = -1;
+		j = -1;
 	}
 	selected.y = NONE_SELECTED;
 	selected.x = NONE_SELECTED;

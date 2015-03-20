@@ -251,6 +251,10 @@ BEGIN
     IDP_OLE_INIT_FAILED     "Ќе удалось выполнить инициализацию OLE.  ”бедитесь в том, что используютс€ правильные версии библиотек OLE."
     IDS_WON_MESSAGE         "You won!"
     IDS_SCORE               "Turns: "
+    TURN_MSG_FORMAT         "%s %d"
+    SELECTED_MSG            "Selected: %d %d"
+    MOVED_MSG               "%d %d moved to %d %d"
+    CANNOT_MOVE             "You cannot move that way"
 END
 
 STRINGTABLE

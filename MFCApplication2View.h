@@ -11,6 +11,9 @@ private:
 	COLORREF backgroundColor = RGB(255,255,255);
 	COLORREF rectanglesColor = RGB(235, 235, 235);
 	CFont * scoreFont;
+	CString selectedMsg;
+	CString movedMsg;
+	CString cannotMsg;
 
 protected: // создать только из сериализации
 	CMFCApplication2View();
@@ -19,7 +22,10 @@ protected: // создать только из сериализации
 // Атрибуты
 public:
 	CMFCApplication2Doc* GetDocument() const;
-
+	int	cxFullScreen;
+	int	cyFullScreen;
+	CDC	memDC;
+	CBitmap	hBmpOffscreen;
 // Операции
 public:
 
@@ -28,16 +34,19 @@ public:
 	virtual void OnDraw(CDC* pDC);  // переопределено для отрисовки этого представления
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 protected:
+	virtual BOOL OnEraseBkgnd(CDC* pDC);
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
 // Реализация
 public:
+	afx_msg virtual int  OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual ~CMFCApplication2View();
 	afx_msg void OnEditBackgroundcolor();
 	afx_msg void OnEditRectanglesColor();
 	afx_msg void OnEditScoreFont();
+	afx_msg void OnUpdatePage(CCmdUI *pCmdUI);
 
 #ifdef _DEBUG
 	virtual void AssertValid() const;

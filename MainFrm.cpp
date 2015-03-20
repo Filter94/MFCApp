@@ -17,6 +17,8 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
+	ON_MESSAGE(WM_USER, &CMainFrame::OnStatusBarUpdate)
+
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -65,11 +67,18 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT));
 
 	// TODO: Удалите эти три строки, если не собираетесь закреплять панель инструментов
-	//m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
-	//EnableDocking(CBRS_ALIGN_ANY);
-	//DockControlBar(&m_wndToolBar);
+	m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
+	EnableDocking(CBRS_ALIGN_ANY);
+	DockControlBar(&m_wndToolBar);
+	return 0;
+}
 
 
+LRESULT CMainFrame::OnStatusBarUpdate(WPARAM wParam, LPARAM lparam)
+{
+	// Load string and update status bar
+	CString* str = (CString *)(LPCTSTR)lparam;
+	m_wndStatusBar.SetPaneText(0, *str);
 	return 0;
 }
 

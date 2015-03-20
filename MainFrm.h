@@ -35,6 +35,7 @@ protected:  // встроенные члены панели элементов управления
 // Созданные функции схемы сообщений
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg LRESULT OnStatusBarUpdate(WPARAM wParam, LPARAM);
 	DECLARE_MESSAGE_MAP()
 
 };

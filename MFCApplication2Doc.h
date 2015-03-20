@@ -23,7 +23,7 @@ protected:
 public:
 	bool select(int i, int j);	//	True if there is no errors
 	void getSelected(int& i, int& j);
-	void TryToMoveTo(int i, int j);
+	void TryToMoveTo(int& i, int& j);
 	bool MoveTo(int& i, int& j);	//	True if there is no errors
 	bool ForceMoveTo(int& i, int& j);
 	int getElement(const int i, const int j);

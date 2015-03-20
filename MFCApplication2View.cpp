@@ -23,6 +23,7 @@ IMPLEMENT_DYNCREATE(CMFCApplication2View, CView)
 
 BEGIN_MESSAGE_MAP(CMFCApplication2View, CView)
 	// Стандартные команды печати
+	ON_WM_CREATE()
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
@@ -39,6 +40,9 @@ CMFCApplication2View::CMFCApplication2View()
 {
 	scoreFont = new CFont;
 	scoreFont -> CreatePointFont(400, _T("Baskerville Old Face"));
+	selectedMsg.LoadString(SELECTED_MSG);
+	movedMsg.LoadString(MOVED_MSG);
+	cannotMsg.LoadString(CANNOT_MOVE);
 }
 
 CMFCApplication2View::~CMFCApplication2View()
@@ -47,9 +51,31 @@ CMFCApplication2View::~CMFCApplication2View()
 
 BOOL CMFCApplication2View::PreCreateWindow(CREATESTRUCT& cs)
 {
-	// TODO: изменить класс Window или стили посредством изменения
-	//  CREATESTRUCT cs
+	cxFullScreen = GetSystemMetrics(SM_CXFULLSCREEN);
+	cyFullScreen = GetSystemMetrics(SM_CYFULLSCREEN);
 	return CView::PreCreateWindow(cs);
+}
+
+int CMFCApplication2View::OnCreate(LPCREATESTRUCT lpCreateStruct){
+	if (CView::OnCreate(lpCreateStruct) == -1)
+		return -1;
+	CDC* pDC = GetWindowDC();
+	memDC.CreateCompatibleDC(pDC);
+	hBmpOffscreen.CreateCompatibleBitmap(pDC, cxFullScreen, cyFullScreen);
+	memDC.SelectObject(&hBmpOffscreen);
+	PatBlt(memDC, 0, 0, cxFullScreen, cyFullScreen, WHITENESS);
+
+
+	COLORREF	crPen;
+	HPEN	    hPen, hPenOld;
+	SetBkMode(memDC, TRANSPARENT);
+
+	crPen = RGB(71, 60, 139);
+	hPen = CreatePen(PS_SOLID, 20, crPen);
+	hPenOld = (HPEN)SelectObject(memDC, hPen);
+
+	ReleaseDC(pDC);
+	return 0;
 }
 
 // рисование CMFCApplication2View
@@ -60,6 +86,7 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
+	PatBlt(memDC, 0, 0, cxFullScreen, cyFullScreen, WHITENESS);
 	CRect rect, rOuterRect, rCellRect, rSelectedRect;
 	GetClientRect(&rect);
 	rOuterRect.top = rect.bottom / 2 - (CELL_SIZE * DOC_Y) / 2;
@@ -71,9 +98,9 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 		pSelectPen(PS_SOLID, CELL_WIDTH, RGB(0, 255, 255));
 	CBrush bCellBrush(rectanglesColor),
 		bWhiteBrush(backgroundColor);
-	pDC -> SelectObject(pOuterPen);
-	pDC->SelectObject(bWhiteBrush);
-	pDC -> Rectangle(rOuterRect);
+	memDC.SelectObject(pOuterPen);
+	memDC.SelectObject(bWhiteBrush);
+	memDC.Rectangle(rOuterRect);
 	rCellRect.top = rOuterRect.top;
 	int g, k;
 	pDoc->getSelected(g, k);
@@ -110,9 +137,9 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 			}	//	Any type of object is > than EMPTY of PART_OF_OBJECT
 			if (element_type > PART_OF_OBJECT)
 			{
-				pDC->SelectObject(pCellPen);
-				pDC->SelectObject(bCellBrush);
-				pDC->Rectangle(rCellRect);
+				memDC.SelectObject(pCellPen);
+				memDC.SelectObject(bCellBrush);
+				memDC.Rectangle(rCellRect);
 			}
 			if ((g >= PART_OF_OBJECT && k >= PART_OF_OBJECT) && ((i == g) && (j == k)))
 			{
@@ -127,30 +154,32 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 	}
 	if ((g >= PART_OF_OBJECT && k >= PART_OF_OBJECT))
 	{
-		pDC->SelectObject(pSelectPen);
-		pDC->SelectObject(bCellBrush);
-		pDC->Rectangle(rSelectedRect);
+		memDC.SelectObject(pSelectPen);
+		memDC.SelectObject(bCellBrush);
+		memDC.Rectangle(rSelectedRect);
 	}
-	CString  s;
+	CString  s, f;
 	CRect textRect;
 	textRect.top = rect.bottom - 80;
 	textRect.left = rect.right / 2 - 300;
 	textRect.bottom = rect.bottom - 10;
 	textRect.right = rect.right / 2 + 300;
-	pDC -> SelectObject(scoreFont);
+	memDC.SelectObject(scoreFont);
 	s.LoadString(IDS_SCORE);
 	CString cszTemp;
-	cszTemp.Format(_T("%s %d"), s, pDoc->getTurns());
-	pDC->DrawText(cszTemp, textRect, DT_CENTER);
+	f.LoadString(TURN_MSG_FORMAT);
+	cszTemp.Format(f, s, pDoc->getTurns());
+	memDC.DrawText(cszTemp, textRect, DT_CENTER);
 	if (pDoc->isWon()){
 		textRect.top = 10;
 		textRect.left = rect.right / 2 - 300;
 		textRect.bottom = textRect.top + 100;
 		textRect.right = rect.right / 2 + 300;
 		s.LoadString(IDS_WON_MESSAGE);
-		pDC -> SelectObject(scoreFont);
-		pDC -> DrawText(s, textRect, DT_CENTER);
+		memDC.SelectObject(scoreFont);
+		memDC.DrawText(s, textRect, DT_CENTER);
 	}
+	pDC->BitBlt(0, 0, cxFullScreen, cyFullScreen, &memDC, 0, 0, SRCCOPY);
 }
 
 
@@ -248,18 +277,36 @@ void countIndexes(CMFCApplication2View& obj, CPoint& pPoint)
 	}
 }
 
-void CMFCApplication2View::OnLButtonDown(UINT nFlags,CPoint pPoint)
+void CMFCApplication2View::OnLButtonDown(UINT nFlags, CPoint pPoint)
 {
 	CPoint indexes(pPoint.x, pPoint.y);
-	indexes.x = pPoint.x;
-	indexes.y = pPoint.y;
 	if (clickInDocument(*this, pPoint))
 	{
+		int selectedX;
+		int selectedY;
 		countIndexes(*this, indexes);
 		CMFCApplication2Doc* pDoc;
 		pDoc = GetDocument();
-		if (!pDoc->select(indexes.y, indexes.x))
-			pDoc->TryToMoveTo(indexes.y, indexes.x);
+		pDoc -> getSelected(selectedX, selectedY);
+		CString * cszTemp = new CString;
+		if (!pDoc->select(indexes.y, indexes.x)){
+			int movedToX = indexes.x;
+			int movedToY = indexes.y;
+			pDoc->TryToMoveTo(movedToY, movedToX);
+			if (movedToX != -1 && movedToY != -1){
+				cszTemp -> Format(movedMsg, selectedX, selectedY, movedToX, movedToY);
+				AfxGetMainWnd()->PostMessage(WM_USER, 0, (LPARAM)(LPCTSTR)cszTemp);
+			}
+			else{
+				AfxGetMainWnd()->PostMessage(WM_USER, 0, (LPARAM)(LPCTSTR)cszTemp);
+			}
+		}
+		else{
+			int i, j;
+			pDoc -> getSelected(i, j);
+			cszTemp -> Format(selectedMsg, i, j);
+			AfxGetMainWnd()->SendMessage(WM_USER, 0, (LPARAM)(LPCTSTR)cszTemp);
+		}
 		Invalidate();
 	}
 	CView::OnLButtonDown(nFlags, pPoint);
@@ -287,7 +334,6 @@ void CMFCApplication2View::OnEditRectanglesColor()
 	GetDocument()->UpdateAllViews(NULL);
 }
 
-
 void CMFCApplication2View::OnEditScoreFont()
 {
 	
@@ -300,4 +346,9 @@ void CMFCApplication2View::OnEditScoreFont()
 		scoreFont->CreateFontIndirect(&lf);
 	}
 	GetDocument()->UpdateAllViews(NULL);
+}
+
+BOOL CMFCApplication2View::OnEraseBkgnd(CDC* pDC)
+{
+	return TRUE;
 }
