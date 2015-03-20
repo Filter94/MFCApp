@@ -263,8 +263,8 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j)
 					gameArr[selected.x + 1][selected.y] = element_type;
 					gameArr[selected.x + 2][selected.y] = PART_OF_OBJECT;
 					gameArr[selected.x + 2][selected.y + 1] = PART_OF_OBJECT;
-					movedToY = selected.y;
-					movedToX = selected.x + 1;
+					movedToY = selected.x + 1;
+					movedToX = selected.y;
 					change = true;
 				}
 				if (selected.x - i == 1 && gameArr[selected.x - 1][selected.y] == EMPTY && gameArr[selected.x - 1][selected.y + 1] == EMPTY)
@@ -274,8 +274,8 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j)
 					gameArr[selected.x + 1][selected.y + 1] = EMPTY;
 					gameArr[selected.x - 1][selected.y + 1] = PART_OF_OBJECT;
 					gameArr[selected.x - 1][selected.y] = element_type;
-					movedToY = selected.y;
-					movedToX = selected.x - 1;
+					movedToY = selected.x - 1;
+					movedToX = selected.y;
 					change = true;
 				}
 			}
@@ -288,8 +288,8 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j)
 					gameArr[selected.x][selected.y + 1] = element_type;
 					gameArr[selected.x][selected.y + 2] = PART_OF_OBJECT;
 					gameArr[selected.x + 1][selected.y + 2] = PART_OF_OBJECT;
-					movedToY = selected.y + 1;
-					movedToX = selected.x;
+					movedToY = selected.x;
+					movedToX = selected.y + 1;
 					change = true;
 				}
 				if (selected.y - j == 1 && gameArr[selected.x + 1][selected.y - 1] == EMPTY && gameArr[selected.x][selected.y - 1] == EMPTY)
@@ -299,8 +299,8 @@ bool CMFCApplication2Doc::MoveTo(int& i, int& j)
 					gameArr[selected.x + 1][selected.y + 1] = EMPTY;
 					gameArr[selected.x + 1][selected.y - 1] = PART_OF_OBJECT;
 					gameArr[selected.x][selected.y - 1] = element_type;
-					movedToY = selected.y;
-					movedToX = selected.x - 1;
+					movedToY = selected.x;
+					movedToX = selected.y - 1;
 					change = true;
 				}
 			}

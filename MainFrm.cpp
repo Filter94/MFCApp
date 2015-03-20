@@ -88,7 +88,7 @@ LRESULT CMainFrame::OnStatusBarUpdate(WPARAM wParam, LPARAM lparam)
 void CMainFrame::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
 	lpMMI->ptMinTrackSize.x = 750;
-	lpMMI->ptMinTrackSize.y = 750;
+	lpMMI->ptMinTrackSize.y = 1010;
 }
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
