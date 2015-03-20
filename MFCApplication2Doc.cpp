@@ -149,12 +149,14 @@ void CMFCApplication2Doc::getSelected(int& i, int& j)
 
 void CMFCApplication2Doc::TryToMoveTo(int i, int j)
 {
-	bool change;
-	History::HistoryRecord record(gameArr);
-	change = MoveTo(i, j);
-	if (change)
+	bool moved;
+	moved = MoveTo(i, j);
+	if (moved)
 	{
 		turns++;
+		History::Cell before(selected.x, selected.y);
+		History::Cell after(j, i);
+		History::HistoryRecord record(before, after);
 		history.makeUndoRecord(record);
 		history.flushRedo();
 	}
@@ -415,40 +417,40 @@ bool CMFCApplication2Doc::ForceMoveTo(int& i, int& j)
 	bool change = false;
 	if (!isWon())
 		switch (element_type)
-	{
-		case FIRST_TYPE:
 		{
-			gameArr[selected.x][selected.y] = EMPTY;
-			gameArr[selected.x][selected.y + 1] = EMPTY;
-			gameArr[i][j] = element_type;
-			gameArr[i][j + 1] = 0;
-			break;
-		}
-		case SECOND_TYPE:
-		{
-			gameArr[selected.x][selected.y] = EMPTY;
-			gameArr[selected.x][selected.y + 1] = EMPTY;
-			gameArr[selected.x + 1][selected.y] = EMPTY;
-			gameArr[selected.x + 1][selected.y + 1] = EMPTY;
-			gameArr[i][j] = element_type;
-			gameArr[i][j + 1] = PART_OF_OBJECT;
-			gameArr[i + 1][j] = PART_OF_OBJECT;
-			gameArr[i + 1][j + 1] = PART_OF_OBJECT;
-			break;
-		}
-		case THIRD_TYPE:
-		{
-			gameArr[selected.x][selected.y] = EMPTY;
-			gameArr[selected.x + 1][selected.y] = EMPTY;
-			gameArr[i][j] = element_type;
-			gameArr[i + 1][j] = PART_OF_OBJECT;
-			break;
-		}
-		case FOURTH_TYPE:
-		{
-			gameArr[selected.x][selected.y] = EMPTY;
-			gameArr[i][j] = element_type;
-		}
+			case FIRST_TYPE:
+			{
+				gameArr[selected.x][selected.y] = EMPTY;
+				gameArr[selected.x + 1][selected.y] = EMPTY;
+				gameArr[i][j] = element_type;
+				gameArr[i + 1][j] = 0;
+				break;
+			}
+			case SECOND_TYPE:
+			{
+				gameArr[selected.x][selected.y] = EMPTY;
+				gameArr[selected.x][selected.y + 1] = EMPTY;
+				gameArr[selected.x + 1][selected.y] = EMPTY;
+				gameArr[selected.x + 1][selected.y + 1] = EMPTY;
+				gameArr[i][j] = element_type;
+				gameArr[i][j + 1] = PART_OF_OBJECT;
+				gameArr[i + 1][j] = PART_OF_OBJECT;
+				gameArr[i + 1][j + 1] = PART_OF_OBJECT;
+				break;
+			}
+			case THIRD_TYPE:
+			{
+				gameArr[selected.x][selected.y] = EMPTY;
+				gameArr[selected.x][selected.y + 1] = EMPTY;
+				gameArr[i][j] = element_type;
+				gameArr[i][j + 1] = PART_OF_OBJECT;
+				break;
+			}
+			case FOURTH_TYPE:
+			{
+				gameArr[selected.x][selected.y] = EMPTY;
+				gameArr[i][j] = element_type;
+			}
 	}
 	return change;
 }
@@ -480,11 +482,15 @@ void CMFCApplication2Doc::OnUpdateEditRedo(CCmdUI *pCmdUI)
 void CMFCApplication2Doc::OnEditUndo()
 {
 	turns--;
-	History::HistoryRecord record(gameArr);
-	history.makeRedoRecord(record);
 	History::HistoryRecord step;
 	step = history.makeUndo();
-	ApplyHistory(step.matrix);
+	history.makeRedoRecord(step);
+	selected.x = step.after.x;
+	selected.y = step.after.y;
+	int toI, toJ;
+	toI = step.before.x;
+	toJ = step.before.y;
+	ForceMoveTo(toI, toJ);
 	selected.x = NONE_SELECTED;
 	selected.y = NONE_SELECTED;
 	UpdateAllViews(NULL);
@@ -493,23 +499,18 @@ void CMFCApplication2Doc::OnEditUndo()
 void CMFCApplication2Doc::OnEditRedo()
 {
 	turns++;
-	History::HistoryRecord record(gameArr);
-	history.makeUndoRecord(record);
 	History::HistoryRecord step;
 	step = history.makeRedo();
-	ApplyHistory(step.matrix);
+	history.makeUndoRecord(step);
+	selected.x = step.before.x;
+	selected.y = step.before.y;
+	int toI, toJ;
+	toI = step.after.x;
+	toJ = step.after.y;
+	ForceMoveTo(toI, toJ);
 	selected.x = NONE_SELECTED;
 	selected.y = NONE_SELECTED;
 	UpdateAllViews(NULL);
-}
-
-void CMFCApplication2Doc::ApplyHistory(int matrix[DOC_Y][DOC_X])
-{
-	for (int i = 0; i < DOC_Y; i++)
-		for (int j = 0; j < DOC_X; j++)
-		{
-			gameArr[i][j] = matrix[i][j];
-		}
 }
 
 #ifdef SHARED_HANDLERS

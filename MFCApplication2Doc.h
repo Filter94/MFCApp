@@ -19,7 +19,6 @@ protected:
 	int turns;
 	CPoint selected;
 	History history;
-	void ApplyHistory(int [DOC_Y][DOC_X]);
 // Операции
 public:
 	bool select(int i, int j);	//	True if there is no errors

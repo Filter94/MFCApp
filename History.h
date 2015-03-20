@@ -8,21 +8,32 @@ class History
 {
 public:
 	class HistoryException : public exception{};
-	struct HistoryRecord{
-		int matrix[DOC_Y][DOC_X];
-
-		HistoryRecord(){};
-		HistoryRecord(int array[DOC_Y][DOC_X]){
-			for (int i = 0; i < DOC_Y; i++)
-				for (int j = 0; j< DOC_X; j++){
-					matrix[i][j] = array[i][j];
-				}
-			}
-		friend CArchive& operator << (CArchive&, const HistoryRecord);
-		friend CArchive& operator >> (CArchive&, const HistoryRecord);
+	struct Cell
+	{
+		int x;
+		int y;
+		friend CArchive& operator << (CArchive&, const Cell);
+		friend CArchive& operator >> (CArchive&, Cell&);
+		Cell(){};
+		Cell(int X, int Y)
+		{
+			x = X;
+			y = Y;
+		}
 	};
-	stack<HistoryRecord> RedoStack;
-	stack<HistoryRecord> UndoStack;
+	struct HistoryRecord
+	{
+		Cell before;
+		Cell after;
+		HistoryRecord(){};
+		HistoryRecord(Cell Before, Cell After)
+		{
+			before = Before;
+			after = After;
+		}
+		friend CArchive& operator << (CArchive&, const HistoryRecord);
+		friend CArchive& operator >> (CArchive&, HistoryRecord&);
+	};
 	History(){};
 	void makeUndoRecord(HistoryRecord);
 	void makeRedoRecord(HistoryRecord);
@@ -32,8 +43,9 @@ public:
 	bool canRedo();
 	void flushHistory();
 	void flushRedo();
-	void save(CArchive& ar);
-	void load(CArchive& ar);
 	friend CArchive& operator << (CArchive&, const History);
-	friend CArchive& operator >> (CArchive&, History);
+	friend CArchive& operator >> (CArchive&, History&);
+private:
+	stack<HistoryRecord> RedoStack;
+	stack<HistoryRecord> UndoStack;
 };
