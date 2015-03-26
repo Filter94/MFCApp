@@ -39,7 +39,6 @@ public:
 	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
 	virtual void OnUpdateEditUndo(CCmdUI *pCmdUI);
 	virtual void OnUpdateEditRedo(CCmdUI *pCmdUI);
-	virtual void FillHistoryView();
 	void addStringInListBox(CString str);
 	virtual void OnEditUndo();
 	virtual void OnEditRedo();

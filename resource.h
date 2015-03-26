@@ -17,6 +17,7 @@
 #define FRAME_WIDTH                     10
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
+#define FONT_NAME_BUFFER                100
 #define IDS_WON_MESSAGE                 101
 #define IDS_SCORE                       102
 #define TURN_MSG_FORMAT                 103
@@ -39,7 +40,6 @@
 #define ID_32778                        32778
 #define EMPTY                           -1
 #define NONE_SELECTED                   -1
-#define FONT_NAME_BUFFER				100
 
 // Next default values for new objects
 // 

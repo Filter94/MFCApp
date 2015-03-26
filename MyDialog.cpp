@@ -20,12 +20,12 @@ MyDialog::MyDialog(CWnd* pParent /*=NULL*/)
 
 void MyDialog::addString(CString str)
 {
-	m_wndListBox.AddString(str);
+	m_wndListBox.InsertString(0, str);
 }
 
 void MyDialog::deleteString()
 {
-	m_wndListBox.DeleteString(m_wndListBox.GetCount() - 1);
+	m_wndListBox.DeleteString(0);
 }
 
 void MyDialog::setEnable()
@@ -56,10 +56,17 @@ void MyDialog::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(MyDialog, CDialog)
 	ON_WM_KEYDOWN()
+	ON_LBN_SELCHANGE(HISTORY_LISTBOX, &MyDialog::OnLbnSelchangeListbox)
 END_MESSAGE_MAP()
 
 void MyDialog::OnCancel()
 {
 	CDialog::OnCancel();
 	enable = !enable;
+}
+
+
+void MyDialog::OnLbnSelchangeListbox()
+{
+	// TODO: Add your control notification handler code here
 }

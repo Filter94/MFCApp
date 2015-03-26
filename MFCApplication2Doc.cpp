@@ -112,10 +112,6 @@ void CMFCApplication2Doc::Serialize(CArchive& ar)
 	}
 }
 
-void CMFCApplication2Doc::FillHistoryView(){
-	
-}
-
 
 BOOL CMFCApplication2Doc::OnOpenDocument(LPCTSTR lpszPathName)
 {
