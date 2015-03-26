@@ -11,6 +11,7 @@
 
 #include "MFCApplication2Doc.h"
 #include "MFCApplication2View.h"
+#include "registry.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -39,14 +40,39 @@ END_MESSAGE_MAP()
 CMFCApplication2View::CMFCApplication2View()
 {
 	scoreFont = new CFont;
-	scoreFont->CreatePointFont(400, _T("Baskerville Old Face"));
+	scoreFont->CreatePointFont(FW_REGULAR, _T("Baskerville Old Face"));
 	selectedMsg.LoadString(SELECTED_MSG);
 	movedMsg.LoadString(MOVED_MSG);
 	cannotMsg.LoadString(CANNOT_MOVE);
-}
+	Registry registry;
+	bool isOK = registry.OpenKey(pszSubKey);
 
-CMFCApplication2View::~CMFCApplication2View()
-{
+	if (isOK)
+	{
+		int regBackgroundColor = registry.GetValue(pszBackgroundColor);
+		if (regBackgroundColor)
+		{
+			backgroundColor = (COLORREF)regBackgroundColor;
+		}
+		int regItemsColor = registry.GetValue(pszItemsColor);
+		if (regItemsColor)
+		{
+			rectanglesColor = (COLORREF)regItemsColor;
+		}
+		CString fontName = registry.GetStrValue(pszScoreFontName, FONT_NAME_BUFFER);
+		int scoreFontWidth = registry.GetValue(pszScoreFontWidth);
+		if (scoreFontWidth == 0)
+		{
+			scoreFontWidth = FW_REGULAR;
+		}
+		if (fontName)
+		{
+			CFont* newFont = new CFont;
+			newFont->CreatePointFont(scoreFontWidth, fontName);
+			scoreFont = newFont;
+			
+		}
+	}
 }
 
 BOOL CMFCApplication2View::PreCreateWindow(CREATESTRUCT& cs)
@@ -97,9 +123,9 @@ void CMFCApplication2View::OnDraw(CDC* pDC)
 		pCellPen(PS_SOLID, CELL_WIDTH, RGB(255, 255, 0)),
 		pSelectPen(PS_SOLID, CELL_WIDTH, RGB(0, 255, 255));
 	CBrush bCellBrush(rectanglesColor),
-		bWhiteBrush(backgroundColor);
+		bBackgroundBrush(backgroundColor);
 	memDC.SelectObject(pOuterPen);
-	memDC.SelectObject(bWhiteBrush);
+	memDC.SelectObject(bBackgroundBrush);
 	memDC.Rectangle(rOuterRect);
 	rCellRect.top = rOuterRect.top;
 	int g, k;
@@ -356,4 +382,22 @@ void CMFCApplication2View::OnEditScoreFont()
 BOOL CMFCApplication2View::OnEraseBkgnd(CDC* pDC)
 {
 	return TRUE;
+}
+
+
+CMFCApplication2View::~CMFCApplication2View()
+{
+	Registry registry;
+
+	bool isOK = registry.CreateKey(pszSubKey);
+
+	if (isOK)
+	{
+		registry.SetKeyValue(NULL, pszBackgroundColor, (int)backgroundColor);
+		registry.SetKeyValue(NULL, pszItemsColor, (int)rectanglesColor);
+		LOGFONT lf;
+		scoreFont->GetLogFont(&lf);
+		registry.SetKeyValue(NULL, pszScoreFontName, (TCHAR*)&lf.lfFaceName);
+		registry.SetKeyValue(NULL, pszScoreFontWidth, (int)lf.lfWeight);
+	}
 }

@@ -14,6 +14,11 @@ private:
 	CString selectedMsg;
 	CString movedMsg;
 	CString cannotMsg;
+	const CString pszSubKey = L"Software\\GingerDonkey";
+	const CString pszBackgroundColor = L"BackgroundColor";
+	const CString pszItemsColor = L"ItemsColor";
+	const CString pszScoreFontName = L"ScoreFontName";
+	const CString pszScoreFontWidth = L"ScoreFontWidth";
 
 protected: // создать только из сериализации
 	CMFCApplication2View();

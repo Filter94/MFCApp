@@ -39,6 +39,7 @@
 #define ID_32778                        32778
 #define EMPTY                           -1
 #define NONE_SELECTED                   -1
+#define FONT_NAME_BUFFER				100
 
 // Next default values for new objects
 // 
