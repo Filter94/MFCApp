@@ -1,10 +1,8 @@
-
-// MFCApplication2Doc.h : интерфейс класса CMFCApplication2Doc
-//
-
-#include "History.h"
-#include"MyDialog.h"
 #pragma once
+#include "History.h"
+#include "MyDialog.h"
+#include "MemoryFile.h"
+
 
 class CMFCApplication2Doc : public CDocument
 {
@@ -35,7 +33,6 @@ public:
 // Переопределение
 public:
 	virtual BOOL OnNewDocument();
-	virtual void Serialize(CArchive& ar);
 	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
 	virtual void OnUpdateEditUndo(CCmdUI *pCmdUI);
 	virtual void OnUpdateEditRedo(CCmdUI *pCmdUI);
@@ -65,4 +62,6 @@ protected:
 	// Вспомогательная функция, задающая содержимое поиска для обработчика поиска
 	void SetSearchContent(const CString& value);
 #endif // SHARED_HANDLERS
+public:
+	virtual BOOL OnSaveDocument(LPCTSTR lpszPathName);
 };

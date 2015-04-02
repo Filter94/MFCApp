@@ -69,60 +69,85 @@ BOOL CMFCApplication2Doc::OnNewDocument()
 	turns = 0;
 	return TRUE;
 }
-
-
-
-
 // сериализация CMFCApplication2Doc
 
-void CMFCApplication2Doc::Serialize(CArchive& ar)
-{
-	if (ar.IsStoring())
-	{
-		ar << turns;
-		for (int i = 0; i < DOC_Y; i++)
-		{
-			for (int j = 0; j < DOC_X; j++)
-			{
-				ar << gameArr[i][j];
-			}
-		}
-		ar << history;
-	}
-	else
-	{
-		ar >> turns;
-		for (int i = 0; i < DOC_Y; i++)
-		{
-			for (int j = 0; j < DOC_X; j++)
-			{
-				ar >> gameArr[i][j];
-			}
-		}
-		ar >> history;
-		stack<History::HistoryRecord> undoCopy;
-		undoCopy = history.getUndoStackReversedCopy();
-		while (undoCopy.size()){
-			History::HistoryRecord record = undoCopy.top();
-			CString stringBuf;
-			stringBuf.Format(storyFormat, record.before.x, record.before.y, record.after.x, record.after.y);
-			m_wndMyDlg.addString(stringBuf);
-			undoCopy.pop();
-		}
-	}
-}
+//void CMFCApplication2Doc::Serialize(CArchive& ar)
+//{
+//	if (ar.IsStoring())
+//	{
+//		ar << turns;
+//		for (int i = 0; i < DOC_Y; i++)
+//		{
+//			for (int j = 0; j < DOC_X; j++)
+//			{
+//				ar << gameArr[i][j];
+//			}
+//		}
+//		ar << history;
+//	}
+//	else
+//	{
+//		ar >> turns;
+//		for (int i = 0; i < DOC_Y; i++)
+//		{
+//			for (int j = 0; j < DOC_X; j++)
+//			{
+//				ar >> gameArr[i][j];
+//			}
+//		}
+//		ar >> history;
+//		stack<History::HistoryRecord> undoCopy;
+//		undoCopy = history.getUndoStackReversedCopy();
+//		while (undoCopy.size()){
+//			History::HistoryRecord record = undoCopy.top();
+//			CString stringBuf;
+//			stringBuf.Format(storyFormat, record.before.x, record.before.y, record.after.x, record.after.y);
+//			m_wndMyDlg.addString(stringBuf);
+//			undoCopy.pop();
+//		}
+//	}
+//}
 
 
 BOOL CMFCApplication2Doc::OnOpenDocument(LPCTSTR lpszPathName)
 {
+	MemoryFile memFile(lpszPathName);
+	history.flushHistory();
 	m_wndMyDlg.clearList();
-	CFile storage;
-	if (!storage.Open(lpszPathName, CFile::modeRead))
-		return FALSE;
-	CArchive arc(&storage, CArchive::load);
-	Serialize(arc);
-	arc.Close();
-	storage.Close();
+	memFile >> turns;
+	for (int i = 0; i < DOC_Y; i++)
+	{
+		for (int j = 0; j < DOC_X; j++)
+		{
+			memFile >> gameArr[i][j];
+		}
+	}
+	memFile >> history;
+	stack<History::HistoryRecord> undoCopy;
+	undoCopy = history.getUndoStackReversedCopy();
+	while (undoCopy.size()){
+		History::HistoryRecord record = undoCopy.top();
+		CString stringBuf;
+		stringBuf.Format(storyFormat, record.before.x, record.before.y, record.after.x, record.after.y);
+		m_wndMyDlg.addString(stringBuf);
+		undoCopy.pop();
+	}
+	return TRUE;
+}
+
+BOOL CMFCApplication2Doc::OnSaveDocument(LPCTSTR lpszPathName)
+{
+	MemoryFile memFile(lpszPathName);
+	memFile << turns;
+	for (int i = 0; i < DOC_Y; i++)
+	{
+		for (int j = 0; j < DOC_X; j++)
+		{
+			memFile << gameArr[i][j];
+		}
+	}
+	memFile << history;
+
 	return TRUE;
 }
 
@@ -606,6 +631,3 @@ void CMFCApplication2Doc::Dump(CDumpContext& dc) const
 	CDocument::Dump(dc);
 }
 #endif //_DEBUG
-
-
-// команды CMFCApplication2Doc

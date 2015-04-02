@@ -1,8 +1,8 @@
-#include <stack>
-#include <iterator>
-#include <iostream>
-#include "Resource.h"
 #pragma once
+#include "stdafx.h"
+#include <stack>
+#include "MemoryFile.h"
+
 using namespace std;
 class History
 {
@@ -12,8 +12,8 @@ public:
 	{
 		int x;
 		int y;
-		friend CArchive& operator << (CArchive&, const Cell);
-		friend CArchive& operator >> (CArchive&, Cell&);
+		friend MemoryFile& operator << (MemoryFile&, const Cell);
+		friend MemoryFile& operator >> (MemoryFile&, Cell&);
 		Cell(){};
 		Cell(int X, int Y)
 		{
@@ -31,8 +31,8 @@ public:
 			before = Before;
 			after = After;
 		}
-		friend CArchive& operator << (CArchive&, const HistoryRecord);
-		friend CArchive& operator >> (CArchive&, HistoryRecord&);
+		friend MemoryFile& operator << (MemoryFile&, const HistoryRecord);
+		friend MemoryFile& operator >> (MemoryFile&, HistoryRecord&);
 	};
 	History(){};
 	void makeUndoRecord(HistoryRecord);
@@ -44,8 +44,8 @@ public:
 	void flushHistory();
 	void flushRedo();
 	stack<HistoryRecord> getUndoStackReversedCopy();
-	friend CArchive& operator << (CArchive&, const History);
-	friend CArchive& operator >> (CArchive&, History&);
+	friend MemoryFile& operator << (MemoryFile&, const History);
+	friend MemoryFile& operator >> (MemoryFile&, History&);
 private:
 	stack<HistoryRecord> RedoStack;
 	stack<HistoryRecord> UndoStack;

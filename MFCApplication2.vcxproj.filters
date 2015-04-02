@@ -48,6 +48,9 @@
     <ClInclude Include="registry.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryFile.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCApplication2.cpp">
@@ -74,12 +77,16 @@
     <ClCompile Include="registry.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="MemoryFile.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MFCApplication2.reg" />
     <None Include="res\MFCApplication2.rc2">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MFCApplication2.rc">

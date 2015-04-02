@@ -55,7 +55,7 @@ void History::flushRedo()
 	}
 }
 
-void saveStack(CArchive& ar, stack<History::HistoryRecord> someStack)
+void saveStack(MemoryFile& ar, stack<History::HistoryRecord> someStack)
 // Save reversed stack to ar
 // Stack on input will be emptied
 {
@@ -73,16 +73,16 @@ void saveStack(CArchive& ar, stack<History::HistoryRecord> someStack)
 	}
 }
 
-CArchive& operator << (CArchive& ar, History history)
+MemoryFile& operator << (MemoryFile& memFile, History history)
 {
 	stack<History::HistoryRecord> undoStackBuf(history.UndoStack),
 		redoStackBuf(history.RedoStack);
-	saveStack(ar, undoStackBuf);
-	saveStack(ar, redoStackBuf);
-	return ar;
+	saveStack(memFile, undoStackBuf);
+	saveStack(memFile, redoStackBuf);
+	return memFile;
 }
 
-CArchive& operator >> (CArchive& ar, History& history)
+MemoryFile& operator >> (MemoryFile& ar, History& history)
 {
 	int undoStackElems;
 	ar >> undoStackElems;
@@ -104,27 +104,27 @@ CArchive& operator >> (CArchive& ar, History& history)
 	return ar;
 }
 
-CArchive& operator >> (CArchive& stream, History::HistoryRecord& record)
+MemoryFile& operator >> (MemoryFile& stream, History::HistoryRecord& record)
 {
 	stream >> record.before >> record.after;
 	return stream;
 }
 
 
-CArchive& operator << (CArchive& stream, const History::HistoryRecord record)
+MemoryFile& operator << (MemoryFile& stream, const History::HistoryRecord record)
 {
 	stream << record.before << record.after;
 	return stream;
 }
 
-CArchive& operator >> (CArchive& stream, History::Cell& cell)
+MemoryFile& operator >> (MemoryFile& stream, History::Cell& cell)
 {
 	stream >> cell.x >> cell.y;
 	return stream;
 }
 
 
-CArchive& operator << (CArchive& stream, const History::Cell cell)
+MemoryFile& operator << (MemoryFile& stream, const History::Cell cell)
 {
 	stream << cell.x << cell.y;
 	return stream;

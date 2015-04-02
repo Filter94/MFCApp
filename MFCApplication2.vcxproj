@@ -103,6 +103,7 @@
   <ItemGroup>
     <ClInclude Include="History.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MemoryFile.h" />
     <ClInclude Include="MFCApplication2.h" />
     <ClInclude Include="MFCApplication2Doc.h" />
     <ClInclude Include="MFCApplication2View.h" />
@@ -120,12 +121,14 @@
     <ClCompile Include="MFCApplication2View.cpp" />
     <ClCompile Include="MyDialog.cpp" />
     <ClCompile Include="registry.cpp" />
+    <ClCompile Include="MemoryFile.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="MFCApplication2.reg" />
     <None Include="res\MFCApplication2.rc2" />
   </ItemGroup>
