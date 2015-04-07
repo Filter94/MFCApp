@@ -11,7 +11,7 @@ MemoryFile::MemoryFile(CString fileName)
 	if (hFile == INVALID_HANDLE_VALUE)
 		throw new exCreateFile;
 
-	hFileMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, NULL, nMaxPoolSize, NULL);
+	hFileMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, NULL, NULL, NULL);
 
 	if (!hFileMapping)
 		throw new exCreateFileMapping;

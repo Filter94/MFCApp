@@ -10,7 +10,7 @@ private:
 	HANDLE hFile;
 	HANDLE hFileMapping;
 
-	const size_t nMaxPoolSize = 1 << sizeof(int) * 8;
+	const size_t nMaxPoolSize = 1 << 16;
 	const size_t nBytesToMap = 1 << sizeof(int) * 8;
 
 	size_t positionInFile;
