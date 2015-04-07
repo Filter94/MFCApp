@@ -43,6 +43,7 @@ public:
 	bool canRedo();
 	void flushHistory();
 	void flushRedo();
+	int getSize();
 	stack<HistoryRecord> getUndoStackReversedCopy();
 	friend MemoryFile& operator << (MemoryFile&, const History);
 	friend MemoryFile& operator >> (MemoryFile&, History&);

@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "resource.h"
 
 using namespace std;
 
@@ -10,15 +11,14 @@ private:
 	HANDLE hFile;
 	HANDLE hFileMapping;
 
-	const size_t nMaxPoolSize = 1 << 16;
+	const size_t nMaxPoolSize = MAX_POOL_SIZE;
 	const size_t nBytesToMap = 1 << sizeof(int) * 8;
 
 	size_t positionInFile;
 	size_t nNumberOfBytesToMap;
 
-	int* szMap;
-
 public:
+	int* szMap;
 	struct exCreateFile {};
 	struct exCreateFileMapping {};
 	struct exAddStringFault {};
@@ -27,6 +27,7 @@ public:
 
 	friend MemoryFile& operator << (MemoryFile&, const int);
 	friend MemoryFile& operator >> (MemoryFile&, int&);
+	int getSize();
 	void addNumber(int number);
 	void addString(wchar_t* str);
 	void setPosition(int number);

@@ -10,6 +10,7 @@
 #endif
 
 #include "MFCApplication2Doc.h"
+#include "md5.h"
 
 #include <propkey.h>
 
@@ -112,32 +113,67 @@ BOOL CMFCApplication2Doc::OnNewDocument()
 BOOL CMFCApplication2Doc::OnOpenDocument(LPCTSTR lpszPathName)
 {
 	MemoryFile memFile(lpszPathName);
-	history.flushHistory();
-	m_wndMyDlg.clearList();
-	memFile >> turns;
-	for (int i = 0; i < DOC_Y; i++)
+	int length;
+	memFile >> length;
+	length;
+	string file_content((char*)memFile.szMap, length);
+	MD5 md5(file_content);
+	string digest = md5.hexdigest();
+	string old_digest("");
+	int int_buf;
+	char char_buf;
+	char* buf_char = new char[MD5_SIZE];
+	int position = length / sizeof(int) + 2;
+	memFile.setPosition(position);
+	for (int i = 0; i < MD5_SIZE; i++)
 	{
-		for (int j = 0; j < DOC_X; j++)
-		{
-			memFile >> gameArr[i][j];
-		}
+		memFile >> int_buf;
+		char_buf = (char)int_buf;
+		buf_char[i] = char_buf;
+		old_digest += string(buf_char, 1);
 	}
-	memFile >> history;
-	stack<History::HistoryRecord> undoCopy;
-	undoCopy = history.getUndoStackReversedCopy();
-	while (undoCopy.size()){
-		History::HistoryRecord record = undoCopy.top();
-		CString stringBuf;
-		stringBuf.Format(storyFormat, record.before.x, record.before.y, record.after.x, record.after.y);
-		m_wndMyDlg.addString(stringBuf);
-		undoCopy.pop();
+	old_digest = string(buf_char, MD5_SIZE);
+	if (digest != old_digest)
+	{
+		CDialog aboutDlg(CHECKSUM_ERROR_DIALOG);
+		aboutDlg.DoModal();
+	}
+	else
+	{
+		history.flushHistory();
+		memFile.setPosition(1);
+		m_wndMyDlg.clearList();
+		memFile >> turns;
+		for (int i = 0; i < DOC_Y; i++)
+		{
+			for (int j = 0; j < DOC_X; j++)
+			{
+				memFile >> gameArr[i][j];
+			}
+		}
+		memFile >> history;
+		stack<History::HistoryRecord> undoCopy;
+		undoCopy = history.getUndoStackReversedCopy();
+		while (undoCopy.size()){
+			History::HistoryRecord record = undoCopy.top();
+			CString stringBuf;
+			stringBuf.Format(storyFormat, record.before.x, record.before.y, record.after.x, record.after.y);
+			m_wndMyDlg.addString(stringBuf);
+			undoCopy.pop();
+		}
 	}
 	return TRUE;
 }
 
 BOOL CMFCApplication2Doc::OnSaveDocument(LPCTSTR lpszPathName)
 {
+	SetModifiedFlag(FALSE);
 	MemoryFile memFile(lpszPathName);
+	int total_size = 1 * sizeof(int); // length of length
+	total_size += history.getSize();
+	total_size += 1 * sizeof(int); // turns
+	total_size += DOC_Y * DOC_X * sizeof(int); // turns
+	memFile << total_size;
 	memFile << turns;
 	for (int i = 0; i < DOC_Y; i++)
 	{
@@ -147,7 +183,16 @@ BOOL CMFCApplication2Doc::OnSaveDocument(LPCTSTR lpszPathName)
 		}
 	}
 	memFile << history;
-
+	string file_content((char*)memFile.szMap, total_size);
+	MD5 md5(file_content);
+	string digest = md5.hexdigest();
+	int length = digest.length();
+	char * cstr = new char[digest.length() + 1];
+	std::strcpy(cstr, digest.c_str());
+	for (int i = 0; i < length; i++)
+	{
+		memFile << digest[i];
+	}
 	return TRUE;
 }
 
@@ -197,6 +242,7 @@ void CMFCApplication2Doc::TryToMoveTo(int& i, int& j)
 		m_wndMyDlg.addString(stringBuf);
 		history.makeUndoRecord(record);
 		history.flushRedo();
+		SetModifiedFlag(TRUE);
 	}
 	else{
 		i = -1;

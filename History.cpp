@@ -130,6 +130,11 @@ MemoryFile& operator << (MemoryFile& stream, const History::Cell cell)
 	return stream;
 }
 
+int History::getSize()
+{
+	return (RedoStack.size() + UndoStack.size() * sizeof(HistoryRecord));
+}
+
 stack<History::HistoryRecord> History::getUndoStackReversedCopy(){
 	stack<History::HistoryRecord> undoCopy(UndoStack);
 	stack<History::HistoryRecord> stackBuf;

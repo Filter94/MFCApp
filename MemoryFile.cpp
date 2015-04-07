@@ -11,7 +11,7 @@ MemoryFile::MemoryFile(CString fileName)
 	if (hFile == INVALID_HANDLE_VALUE)
 		throw new exCreateFile;
 
-	hFileMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, NULL, NULL, NULL);
+	hFileMapping = CreateFileMapping(hFile, NULL, PAGE_READWRITE, NULL, nMaxPoolSize, NULL);
 
 	if (!hFileMapping)
 		throw new exCreateFileMapping;
@@ -20,6 +20,7 @@ MemoryFile::MemoryFile(CString fileName)
 
 	if (szMap == NULL)
 		throw new exCreateFileMapping;
+	positionInFile = 0;
 }
 
 MemoryFile::~MemoryFile()
@@ -33,6 +34,13 @@ void MemoryFile::addNumber(int number)
 {
 	szMap[positionInFile++] = (int)number;
 }
+
+
+int MemoryFile::getSize()
+{
+	return positionInFile;
+}
+
 
 void MemoryFile::setPosition(int number)
 {
